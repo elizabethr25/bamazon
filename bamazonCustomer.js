@@ -30,28 +30,29 @@ function promptOrder() {
       }
     ])
     .then(function(answer) {
-      const item = answer.productId;
-      const quantity = answer.quantity;
+      const itemOrdered = parseInt(answer.productId);
+      const quantityOrdered = parseInt(answer.quantity);
 
       console.log(
         "\n You have selected " +
-          quantity +
+          quantityOrdered +
           " units of item ID: " +
-          item +
+          itemOrdered +
           ". \n"
       );
 
-      connection.query("SELECT * FROM products", { item_id: item }, function(
+      connection.query("SELECT * FROM products WHERE ?", {item_id: itemOrdered}, function(
         err,
         res
       ) {
         if (err) throw err;
+        // console.log(res[0].stock_quantity);
         if (res.length === 0) {
           console.log(
             "Error: Invalid item ID. Please re-order a valid item ID."
           );
         } else {
-          if (quantity > res[0].stock_quantity) {
+          if (quantityOrdered < parseInt(res[0].stock_quantity)) {
             console.log("Your order has been processed and is confirmed.");
           } else {
             console.log(
@@ -71,7 +72,6 @@ function showInventory() {
     promptOrder();
   })
 }
-
 
 function runOrder() {
   showInventory();
